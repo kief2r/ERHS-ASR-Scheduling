@@ -1,0 +1,96 @@
+import random
+import numpy as np
+import copy
+import pandas as pd
+import time
+
+t0 = time.time()
+
+# Example input for teachers and their classes
+teachers_classes = teachers_classes = teachers_classes = {
+    'lin_classes': ['class1', 'class2', 'class3'],
+    'damico_classes': ['class1', 'class2', 'class3'],
+    'damico_classes': ['class1', 'class2', 'class3'],
+    'damico_classes': ['class1', 'class2', 'class3'],
+    'damico_classes': ['class1', 'class2', 'class3'],
+    'damico_classes': ['class1', 'class2', 'class3'],
+    'damico_classes': ['class1', 'class2', 'class3'],
+    'damico_classes': ['class1', 'class2', 'class3'],
+    'damico_classes': ['class1', 'class2', 'class3'],
+    'damico_classes': ['class1', 'class2', 'class3'],
+    'damico_classes': ['class1', 'class2', 'class3'],
+    'damico_classes': ['class1', 'class2', 'class3'],  
+}
+
+ex_sched1 = {'lin_classes': ['class1', 'class3', 'class2'], 
+            'damico_classes': ['class1', 'class2', 'class3'],
+            '1_classes': ['class1', 'class2', 'class3'],
+            '2_classes': ['class1', 'class2', 'class3'],
+            '3_classes': ['class1', 'class2', 'class3'],
+            '4_classes': ['class1', 'class2', 'class3'],
+            '5_classes': ['class1', 'class2', 'class3'],
+            '6_classes': ['class1', 'class2', 'class3'],
+            '7_classes': ['class1', 'class2', 'class3'],
+            '8_classes': ['class1', 'class2', 'class3'],
+            '9_classes': ['class1', 'class2', 'class3'],
+            '0_classes': ['class1', 'class2', 'class3'],}
+
+ex_sched2 = {'lin_classes': ['class1', 'class3', 'class2'], 
+            'damico_classes': ['class1', 'class3', 'class2']
+}
+
+def initial_population(teachers_dict, population_size):
+    population = []
+    for i in range(population_size):
+        shuffled_schedules = {teacher: np.random.permutation(classes).tolist() for teacher, classes in teachers_dict.items()}
+        population.append(shuffled_schedules)
+    return population
+
+
+def calculate_fitness(schedule):
+    fitness_global = 0
+    fitness_max = 0
+
+    def class_in_periods_timetable(class_, periods, fitness):
+        nonlocal fitness_global  
+        nonlocal fitness_max
+        class_period = classes.index(class_) + 1 if class_ in classes else 0
+        if isinstance(periods, int):  # Check if periods is an integer
+            if class_period == periods:  # Compare with a single period
+                fitness_global += fitness
+        else:  # Handle the case where periods is an iterable
+            if class_period in periods:
+                fitness_global += fitness
+        if fitness > 0: 
+            fitness_max += fitness
+
+    def class_in_period_teacher(teacher, class_, period, fitness):
+        nonlocal fitness_global
+        nonlocal fitness_max
+        if teacher in schedule and class_ in schedule[teacher]:
+            class_period = schedule[teacher].index(class_) + 1
+        if class_period == period:
+            fitness_global += fitness
+        if fitness > 0: 
+            fitness_max += fitness
+        
+
+    def conflicting_class(teacher1, teacher2, teacher1class, teacher2class, fitness): 
+        nonlocal fitness_global
+        nonlocal fitness_max
+        if teacher1 in schedule and teacher2 in schedule:
+            if teacher1class in schedule[teacher1] and teacher2class in schedule[teacher2]: 
+                fitness_global += fitness
+        if fitness > 0: 
+            fitness_max += fitness
+
+    for teacher, classes in schedule.items():
+        # to call functions that traverse the entire schedule
+        class_in_periods_timetable('class1', 1, 2)  # Single period as an integer
+        class_in_periods_timetable('class2', [1, 2, 3], 3)  # Multiple periods as a list
+
+# for funtions that are teacher specific
+    class_in_period_teacher('lin_classes', 'class1', 1, 5)
+    class_in_period_teacher('damico_classes', 'class3', 3, 5)
+    conflicting_class('lin_classes', 'damico_classes', 'class1', 'class1', -5)
+    return fitness_global, fitness_max, fitness_global/fitness_max

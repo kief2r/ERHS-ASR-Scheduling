@@ -51,7 +51,7 @@ def calculate_fitness(schedule):
     fitness_global = 0
     fitness_max = 0
 
-    def class_in_periods_timetable(class_, periods, fitness):
+    def class_in_periods_timetable(class_, periods, fitness): # keeps a class in select period #(s) across the entire timetable
         nonlocal fitness_global  
         nonlocal fitness_max
         class_period = classes.index(class_) + 1 if class_ in classes else 0
@@ -64,7 +64,7 @@ def calculate_fitness(schedule):
         if fitness > 0: 
             fitness_max += fitness
 
-    def class_in_period_teacher(teacher, class_, period, fitness):
+    def class_in_period_teacher(teacher, class_, period, fitness): # keeps the class of a teacher in a certain period
         nonlocal fitness_global
         nonlocal fitness_max
         if teacher in schedule and class_ in schedule[teacher]:
@@ -75,7 +75,7 @@ def calculate_fitness(schedule):
             fitness_max += fitness
         
 
-    def conflicting_class(teacher1, teacher2, teacher1class, teacher2class, fitness): 
+    def conflicting_class(teacher1, teacher2, teacher1class, teacher2class, fitness): # make sure classes don't conflict in the timetable
         nonlocal fitness_global
         nonlocal fitness_max
         if teacher1 in schedule and teacher2 in schedule:
